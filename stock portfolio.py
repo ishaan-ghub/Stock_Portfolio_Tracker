@@ -1,8 +1,17 @@
 import requests
 from dotenv import load_dotenv
 import os
+import sqlite3
 
 load_dotenv()
+
+def Create_table():
+    conn = sqlite3.connect("Portfolio.db")
+    cursor=conn.cursor()
+    cursor.execute(''' CREATE TABLE IF NOT EXISTS portfolio (Symbol TEXT, Quantity INTEGER, Current_price REAL, Current_value REAL) ''')
+
+    conn.commit()
+    conn.close()
 
 class StockPortfolio:
     def __init__(self, api_key):
@@ -12,6 +21,7 @@ class StockPortfolio:
     def add_stock(self, symbol, quantity):
         if symbol in self.portfolio:
             self.portfolio[symbol]['quantity'] += quantity
+            print(f"{quantity} more stocks of {symbol} added successfully!")
         else:
             self.portfolio[symbol] = {'quantity': quantity}
         print(f"{symbol.strip()} addded successfully to your portfolio!")
@@ -28,7 +38,6 @@ class StockPortfolio:
                 self.portfolio[symbol]['quantity'] -= quantity
                 print(f"{quantity.strip()} stocks of {symbol.strip()} sold successfully!")
                 print("_______________________________________")
-
 
     def get_stock_data(self, symbol):
         base_url = 'https://www.alphavantage.co/query'
@@ -77,8 +86,19 @@ class StockPortfolio:
                 print(f"Total Value: {details['current_value']:.2f}")
                 print("-----------")
         print("_______________________________________")
+    
+    def Add_Table(self):
+        conn=sqlite3.connect("Portfolio.db")
+        cursor=conn.cursor()
+
+        for symbol,data in self.portfolio.items():
+            cursor.execute('''INSERT INTO portfolio(Symbol, Quantity, Current_price, Current_value) VALUES(?, ?, ?, ?)''',(symbol,data['quantity'],data['current_price'],data['current_value']))
+
+        conn.commit()
+        conn.close()
 
 if __name__ == "__main__":
+    Create_table()
     api_key = os.getenv("API_KEY")
     portfolio = StockPortfolio(api_key)
 
@@ -117,6 +137,7 @@ if __name__ == "__main__":
             else:
                 portfolio.update_portfolio()
                 portfolio.display_portfolio()
+                portfolio.Add_Table()
 
         elif choice == 4:
             print("Program ended!")
