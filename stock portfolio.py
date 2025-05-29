@@ -84,14 +84,14 @@ if __name__ == "__main__":
 
     while True:
         print("1. Add Stock\n2. Sell Stock\n3. Display Portfolio\n4. End")
-        choice = input("Enter your choice (1/2/3/4): ")
+        choice = int(input("Enter your choice (1/2/3/4): "))
 
-        if choice not in '1234':
+        if choice not in (1,2,3,4):
             print("Invalid choice. Please enter a valid option.")
             print("_______________________________________")
             break
 
-        elif choice == '1':
+        elif choice ==1:
             symbol = input("Enter stock symbol: ").upper()
             validate = portfolio.get_stock_data(symbol)
             if validate:
@@ -101,7 +101,7 @@ if __name__ == "__main__":
                 print("Stock symbol not valid")
                 print("_______________________________________")
 
-        elif choice == '2':
+        elif choice == 2:
             if not portfolio.portfolio:
                 print("Add a stock first to the portfolio")
                 print("_______________________________________")
@@ -110,7 +110,7 @@ if __name__ == "__main__":
                 quantity = int(input("Enter quantity to sell: "))
                 portfolio.remove_stock(symbol, quantity)
 
-        elif choice == '3':
+        elif choice == 3:
             if not portfolio.portfolio:
                 print("Your portfolio is empty!")
                 print("_______________________________________")
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 portfolio.update_portfolio()
                 portfolio.display_portfolio()
 
-        elif choice == '4':
+        elif choice == 4:
             print("Program ended!")
             print("_______________________________________")
             break
