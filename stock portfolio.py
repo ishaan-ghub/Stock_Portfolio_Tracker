@@ -168,4 +168,3 @@ if __name__ == "__main__":
             print("Program ended!")
             print("_______________________________________")
             break
-        # Symbol, Quantity, Current_price AS "Current Price", Current_value AS "Current value"
