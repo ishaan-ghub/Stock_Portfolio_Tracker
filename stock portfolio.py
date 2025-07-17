@@ -11,7 +11,7 @@ table = 'portfolio'
 db = "Portfolio.db"
 
 def Create_table():
-    conn = sqlite3.connect(db)
+    conn = sqlite3.connect(db,check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute(f''' CREATE TABLE IF NOT EXISTS {table} (
         Symbol TEXT PRIMARY KEY,
@@ -22,7 +22,7 @@ def Create_table():
     conn.close()
 
 def Fetch_table():
-    conn = sqlite3.connect(db)
+    conn = sqlite3.connect(db,check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute(f'''SELECT * FROM {table}''')
     query = cursor.fetchall()
@@ -77,7 +77,7 @@ class StockPortfolio:
                 self.portfolio[symbol]['current_value'] = current_value
 
     def Add_Table(self):
-        conn = sqlite3.connect(db)
+        conn = sqlite3.connect(db,check_same_thread=False)
         cursor = conn.cursor()
         for symbol, data in self.portfolio.items():
             cursor.execute(f'''INSERT OR REPLACE INTO {table}
@@ -114,9 +114,14 @@ class StockPortfolio:
             self.portfolio[symbol]['quantity'] -= quantity
             if self.portfolio[symbol]['quantity'] == 0:
                 del self.portfolio[symbol]
-            self.update_portfolio()
-            self.Add_Table()
-            return "sold"
+                with sqlite3.connect(db, check_same_thread=False) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute(f"DELETE FROM {table} WHERE Symbol = ?", (symbol,))
+                    conn.commit()
+            else:
+                self.update_portfolio()
+                self.Add_Table()
+                return "sold"
 
 # GUI code
 class PortfolioApp:
@@ -207,8 +212,6 @@ class PortfolioApp:
 
     def refresh_table(self):
         self.portfolio.Sync_with_db()
-        self.portfolio.update_portfolio()
-        self.portfolio.Add_Table()
 
         for i in self.tree.get_children():
             self.tree.delete(i)
