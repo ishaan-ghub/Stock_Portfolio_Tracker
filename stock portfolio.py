@@ -169,9 +169,9 @@ class PortfolioApp:
         if result == "added":
             messagebox.showinfo("Sucesss!",f"Congratulations {quantity} stocks of {symbol} added successfully.")
         elif result == "invalid":
-            messagebox.showerror("Invalid","Enter a valid symbol!")
+            messagebox.showerror("Invalid","Enter a valid symbol")
         elif result == "API limit":
-            messagebox.showwarning("API limit exceeded, try again later")
+            messagebox.showwarning("Limit exceeded","API limit exceeded, try again later")
         self.refresh_table()
 
     def create_sell_tab(self):
