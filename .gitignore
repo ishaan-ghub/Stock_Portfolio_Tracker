@@ -2,3 +2,5 @@
 Portfolio.db
 tempCodeRunnerFile.py
 stockenv/
+.vscode/
+__pycache__/
